@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:talimger2}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:qwerty}
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+
+jwt:
+  expiration: 900000
+  refresh:
+    expiration: 604800000
+  secret: 3b2c7003a0c322700485f5f7548256b7f4159472e726cbd7c3d27317ef987bce
+server:
+  port: 8080
+logging:
+  level:
+    org:
+      flywaydb: DEBUG
+#  900000
