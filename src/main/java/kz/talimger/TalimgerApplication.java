@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Collections;
+import java.util.List;
 
 @SpringBootApplication
 @EnableJpaAuditing
@@ -27,8 +28,8 @@ public class TalimgerApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        User adminAccount = userRepository.findByRoles(Collections.singleton(roleRepository.findByName(RoleEnum.ADMIN.getCode())));
-        if (adminAccount == null) {
+        List<User> adminAccount = userRepository.findByRoles(Collections.singleton(roleRepository.findByName(RoleEnum.ADMIN.getCode())));
+        if (adminAccount.isEmpty()) {
             User user = new User();
             user.setEmail("admin@gmail.com");
             user.setFirstName("ADMIN");

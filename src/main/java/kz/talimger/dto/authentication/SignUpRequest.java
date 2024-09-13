@@ -1,6 +1,7 @@
 package kz.talimger.dto.authentication;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -34,6 +35,7 @@ public class SignUpRequest {
 
     @NotBlank(message = "Почта не может быть пустым или равен null")
     @Schema(description = "Электронная почта", example = "user@example.com")
+    @Email
     private String email;
 
     @NotBlank(message = "Пароль не может быть пустым или равен null")

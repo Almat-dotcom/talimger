@@ -40,6 +40,9 @@ public class User extends BaseEntity implements UserDetails {
     )
     private Set<Role> roles;
 
+    @OneToOne(mappedBy = "user")
+    private ForgotPassword forgotPassword;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
