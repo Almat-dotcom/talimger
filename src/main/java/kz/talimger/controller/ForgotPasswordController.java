@@ -1,5 +1,7 @@
 package kz.talimger.controller;
 
+import kz.talimger.dto.forgotPassword.VerifyMailDto;
+import kz.talimger.dto.forgotPassword.VerifyOtpDto;
 import kz.talimger.dto.mail.ChangePassword;
 import kz.talimger.service.ForgotPasswordService;
 import lombok.RequiredArgsConstructor;
@@ -13,14 +15,14 @@ public class ForgotPasswordController {
     private final ForgotPasswordService forgotPasswordService;
 
     @PostMapping("/verify/mail")
-    public ResponseEntity<String> verifyEmail(@RequestParam String email) {
-        forgotPasswordService.verifyEmail(email);
+    public ResponseEntity<String> verifyEmail(@RequestBody VerifyMailDto verifyMailDto) {
+        forgotPasswordService.verifyEmail(verifyMailDto);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/verify/otp")
-    public ResponseEntity<String> verifyOtp(@RequestParam Integer otp, @RequestParam String email) {
-        forgotPasswordService.verifyOtp(otp, email);
+    public ResponseEntity<String> verifyOtp(@RequestBody VerifyOtpDto dto) {
+        forgotPasswordService.verifyOtp(dto);
         return ResponseEntity.ok().build();
     }
 

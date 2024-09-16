@@ -1,6 +1,8 @@
 package kz.talimger.service.impl;
 
 import jakarta.transaction.Transactional;
+import kz.talimger.dto.forgotPassword.VerifyMailDto;
+import kz.talimger.dto.forgotPassword.VerifyOtpDto;
 import kz.talimger.dto.mail.ChangePassword;
 import kz.talimger.dto.mail.MailBody;
 import kz.talimger.exception.KazNpuException;
@@ -34,8 +36,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void verifyEmail(String email) {
-        User user = userService.findUserByEmail(email);
+    public void verifyEmail(VerifyMailDto dto) {
+        User user = userService.findUserByEmail(dto.getEmail());
         ForgotPassword fp = forgotPasswordRepository.findByUser(user).orElse(null);
         if (Objects.nonNull(fp)) {
             forgotPasswordRepository.delete(fp);
@@ -43,7 +45,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
         int otp = otpGenerator();
         MailBody mailBody = MailBody.builder()
-                .to(email)
+                .to(dto.getEmail())
                 .text(messageUtils.getMessage("message.inform.otp-text", String.valueOf(otp)))
                 .subject(messageUtils.getMessage("message.inform.otp-subject"))
                 .build();
@@ -60,19 +62,19 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     }
 
     @Override
-    public void verifyOtp(Integer otp, String email) {
-        User user = userService.findUserByEmail(email);
+    public void verifyOtp(VerifyOtpDto dto) {
+        User user = userService.findUserByEmail(dto.getEmail());
 
-        ForgotPassword fp = forgotPasswordRepository.findByOtpAndUser(otp, user).orElseThrow(
+        ForgotPassword fp = forgotPasswordRepository.findByOtpAndUser(dto.getOtp(), user).orElseThrow(
                 () -> new KazNpuException(HttpStatus.NOT_FOUND,
                         ErrorCodeConstant.INVALID_OTP,
-                        "message.error.invalid-otp", email));
+                        "message.error.invalid-otp", dto.getEmail()));
 
         if (fp.getExpirationDate().isBefore(LocalDateTime.now())) {
             forgotPasswordRepository.deleteById(fp.getId());
             throw new KazNpuException(HttpStatus.EXPECTATION_FAILED,
                     ErrorCodeConstant.EXPIRED_OTP,
-                    "message.error.expired-otp", email);
+                    "message.error.expired-otp", dto.getEmail());
         }
 
         fp.setIsVerified(true);
