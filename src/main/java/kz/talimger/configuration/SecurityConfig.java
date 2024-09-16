@@ -26,6 +26,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -64,22 +65,25 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationEntryPoint unauthorizedHandler() {
-        return (request, response, authException) -> {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized: Authentication is required");  // Возвращаем 401
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**") // Применить ко всем путям
+                        .allowedOrigins("http://localhost:4200") // Разрешённый домен
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD") // Разрешённые методы
+                        .allowedHeaders("*") // Разрешённые заголовки
+                        .allowCredentials(true) // Разрешить отправку куки и авторизационных данных
+                        .maxAge(3600); // Кэширование preflight-запросов (OPTIONS) в секундах
+            }
         };
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE","OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
-        configuration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
+    public AuthenticationEntryPoint unauthorizedHandler() {
+        return (request, response, authException) -> {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized: Authentication is required");  // Возвращаем 401
+        };
     }
 
     @Bean
