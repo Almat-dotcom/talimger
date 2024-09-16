@@ -47,6 +47,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Correctly set the CorsConfigurationSource
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/forgot-password/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/v1/admin").hasAuthority(RoleEnum.ADMIN.getCode())
                         .requestMatchers("/api/v1/user").hasAuthority(RoleEnum.USER.getCode())
