@@ -1,6 +1,8 @@
 package kz.talimger.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,17 +13,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "city")
-public class City extends BaseEntity {
+@Table(name = "country")
+public class Country extends BaseEntity{
     @Column(nullable = false, unique = true)
     private Long locationId;
 
     @Column(nullable = false, unique = true)
     private String name;
-
-    @ManyToOne
-    @JoinColumn(name = "region_id")
-    private Region region;
-
-    private Boolean isCenter;
 }

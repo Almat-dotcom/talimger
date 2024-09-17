@@ -11,8 +11,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "city")
-public class City extends BaseEntity {
+@Table(name = "region")
+public class Region extends BaseEntity{
     @Column(nullable = false, unique = true)
     private Long locationId;
 
@@ -20,8 +20,6 @@ public class City extends BaseEntity {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "region_id")
-    private Region region;
-
-    private Boolean isCenter;
+    @JoinColumn(name = "country_id")
+    private Country country;
 }
