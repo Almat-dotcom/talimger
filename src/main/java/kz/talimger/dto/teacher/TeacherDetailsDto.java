@@ -11,6 +11,8 @@ public class TeacherDetailsDto {
     private String firstName;
     private String lastName;
     private String middleName;
+    private String fullName;
+    private String initials;
     private String email;
     private DepartmentDto department;
 }

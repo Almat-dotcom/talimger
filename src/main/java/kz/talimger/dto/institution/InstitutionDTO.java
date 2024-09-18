@@ -99,6 +99,7 @@ public class InstitutionDTO {
             private String number;
             private String street;
             private String type;
+            private String comment;
         }
     }
 
@@ -111,6 +112,9 @@ public class InstitutionDTO {
 
         @JsonProperty("city_alias")
         private String cityAlias;
+
+        @JsonProperty("is_default")
+        private boolean isDefault;
 
         private FlagsDTO flags;
 

@@ -36,6 +36,13 @@ public class SpecializationServiceImpl implements SpecializationService {
 
     @Override
     public SpecializationDto createSpecialization(CreateSpecializationDto dto) {
+        if (specializationRepository.findByName(dto.getName()).isPresent()) {
+            throw new KazNpuException(
+                    HttpStatus.CONFLICT,
+                    ErrorCodeConstant.SPECIALIZATION_IS_EXIST,
+                    "message.error.specialization-is-exist");
+        }
+
         Specialization specialization = specializationRepository.save(specializationMapper.toEntity(dto));
         return specializationMapper.toDto(specialization);
     }

@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.List;
 
 @SpringBootApplication
-@EnableJpaAuditing
 public class TalimgerApplication implements CommandLineRunner {
     @Autowired
     private UserRepository userRepository;

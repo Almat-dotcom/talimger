@@ -8,13 +8,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "roles")
-public class Role extends BaseEntity {
+public class Role extends BaseEntity implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     @Column(nullable = false, unique = true)
     private String name;
 }

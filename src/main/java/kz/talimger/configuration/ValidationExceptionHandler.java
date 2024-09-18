@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import kz.talimger.exception.KazNpuException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,15 @@ import java.util.UUID;
 @ControllerAdvice
 @Slf4j
 public class ValidationExceptionHandler {
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponseDto> handleAllExceptions(Exception ex, HttpServletRequest request) {
+        ErrorResponseDto errorResponse = new ErrorResponseDto(ex);
+        errorResponse.setMessage(ex.getMessage());
+        log.error("Unhandled exception occurred: {}", ex.getMessage(), ex);
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -49,6 +59,7 @@ public class ValidationExceptionHandler {
     }
 
     @Getter
+    @Setter
     @AllArgsConstructor
     public static class ErrorResponseDto {
 

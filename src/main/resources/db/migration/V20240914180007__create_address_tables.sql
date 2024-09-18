@@ -42,11 +42,11 @@ ALTER TABLE city
     ADD CONSTRAINT fk_region FOREIGN KEY (region_id) REFERENCES region(id);
 
 ALTER TABLE city
-    ADD COLUMN is_center BOOLEAN DEFAULT FALSE;
+    ADD COLUMN is_region_center BOOLEAN DEFAULT FALSE;
 
 COMMENT ON COLUMN city.location_id IS 'Идентификатор местоположения города';
 COMMENT ON COLUMN city.region_id IS 'Ссылка на регион, к которому относится город';
-COMMENT ON COLUMN city.is_center IS 'Является ли город региональным центром';
+COMMENT ON COLUMN city.is_region_center IS 'Является ли город региональным центром';
 
 CREATE TABLE district (
                           id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -113,14 +113,13 @@ CREATE TABLE address (
                          building_id VARCHAR(255) UNIQUE,
                          address_name VARCHAR(255),
                          address_comment VARCHAR(255),
-                         country_id UUID NOT NULL,
+                         country_id UUID,
                          region_id UUID,
                          city_id UUID,
                          district_id UUID,
                          district_area_id UUID,
                          settlement_id UUID,
                          street VARCHAR(255),
-                         building_number VARCHAR(255),
                          created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
                          updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
                          created_by VARCHAR(255),

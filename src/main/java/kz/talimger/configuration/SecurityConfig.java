@@ -1,10 +1,9 @@
 package kz.talimger.configuration;
 
-import jakarta.servlet.http.HttpServletRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import kz.talimger.enums.RoleEnum;
 import kz.talimger.service.UserService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +15,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -26,11 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -46,11 +40,15 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Correctly set the CorsConfigurationSource
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/v1/auth/**","/api/v1/forgot-password/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**", "/api/v1/forgot-password/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/v1/admin").hasAuthority(RoleEnum.ADMIN.getCode())
                         .requestMatchers("/api/v1/user").hasAuthority(RoleEnum.USER.getCode())
                         .anyRequest().authenticated())
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(unauthorizedHandler())
+                        .accessDeniedHandler(accessDeniedHandler())
+                )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider()).addFilterBefore(
                         jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class
@@ -84,14 +82,26 @@ public class SecurityConfig {
     @Bean
     public AuthenticationEntryPoint unauthorizedHandler() {
         return (request, response, authException) -> {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized: Authentication is required");  // Возвращаем 401
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
+
+            ValidationExceptionHandler.ErrorResponseDto errorResponse = new ValidationExceptionHandler.ErrorResponseDto(authException);
+            errorResponse.setMessage("Unauthorized: Authentication is required");
+
+            response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
         };
     }
 
     @Bean
     public AccessDeniedHandler accessDeniedHandler() {
         return (request, response, accessDeniedException) -> {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden: You don't have permission to access this resource");  // Возвращаем 403
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType("application/json;charset=UTF-8");
+
+            ValidationExceptionHandler.ErrorResponseDto errorResponse = new ValidationExceptionHandler.ErrorResponseDto(accessDeniedException);
+            errorResponse.setMessage("Forbidden: You don't have permission to access this resource");
+
+            response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
         };
     }
 

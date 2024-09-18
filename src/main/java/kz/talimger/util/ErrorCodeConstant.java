@@ -12,6 +12,8 @@ public class ErrorCodeConstant {
     public final String INVALID_PASSWORD_OR_EMAIL = "INVALID_PASSWORD_OR_EMAIL";
     public final String MESSAGE_CONTENT_EMPTY = "MESSAGE_CONTENT_EMPTY";
     public final String USER_IS_EXIST = "USER_IS_EXIST";
+    public final String DEPARTMENT_IS_EXIST = "DEPARTMENT_IS_EXIST";
+    public final String SPECIALIZATION_IS_EXIST = "SPECIALIZATION_IS_EXIST";
     public final String INVALID_OTP = "INVALID_OTP";
     public final String OTP_NOT_VERIFIED = "OTP_NOT_VERIFIED";
     public final String EXPIRED_OTP = "EXPIRED_OTP";
