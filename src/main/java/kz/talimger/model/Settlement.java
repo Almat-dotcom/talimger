@@ -12,13 +12,13 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "settlement")
-public class Settlement extends BaseEntity{
+public class Settlement extends BaseEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
     @ManyToOne
     @JoinColumn(name = "region_id", nullable = true)
-    private Region region; // Связь с таблицей Region
+    private Region region;
 
     @Column(name = "location_id", nullable = false, unique = true)
     private Long locationId;

@@ -1,5 +1,6 @@
-package kz.talimger.dto.school;
+package kz.talimger.dto.institution;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,46 +8,89 @@ import java.util.List;
 
 @Getter
 @Setter
-public class SchoolDTO {
+public class InstitutionDTO {
     private AddressDTO address;
-    private String address_name;
-    private List<AdmDivDTO> adm_div;
-    private String building_name;
-    private String city_alias;
-    private List<ContactGroupDTO> contact_groups;
+
+    @JsonProperty("address_name")
+    private String addressName;
+
+    @JsonProperty("adm_div")
+    private List<AdmDivDTO> admDiv;
+
+    @JsonProperty("building_name")
+    private String buildingName;
+
+    @JsonProperty("city_alias")
+    private String cityAlias;
+
+    @JsonProperty("contact_groups")
+    private List<ContactGroupDTO> contactGroups;
+
     private ContextDTO context;
     private DatesDTO dates;
-    private List<ExternalContentDTO> external_content;
+
+    @JsonProperty("external_content")
+    private List<ExternalContentDTO> externalContent;
+
     private FlagsDTO flags;
     private FloorsDTO floors;
-    private String full_name;
+
+    @JsonProperty("full_name")
+    private String fullName;
+
     private GeometryDTO geometry;
     private List<GroupDTO> group;
     private String id;
-    private boolean is_promoted;
+
+    @JsonProperty("is_promoted")
+    private boolean isPromoted;
+
     private LinksDTO links;
     private String locale;
     private String name;
-    private NameExDTO name_ex;
+
+    @JsonProperty("name_ex")
+    private NameExDTO nameEx;
+
     private OrgDTO org;
-    private String poi_category;
+
+    @JsonProperty("poi_category")
+    private String poiCategory;
+
     private PointDTO point;
-    private String purpose_code;
-    private String purpose_name;
-    private String region_id;
+
+    @JsonProperty("purpose_code")
+    private String purposeCode;
+
+    @JsonProperty("purpose_name")
+    private String purposeName;
+
+    @JsonProperty("region_id")
+    private String regionId;
+
     private ReviewsDTO reviews;
     private List<RubricDTO> rubrics;
     private ScheduleDTO schedule;
-    private String segment_id;
+
+    @JsonProperty("segment_id")
+    private String segmentId;
+
     private StatDTO stat;
-    private int timezone_offset;
+
+    @JsonProperty("timezone_offset")
+    private int timezoneOffset;
+
     private String type;
 
     @Getter
     @Setter
     public static class AddressDTO {
-        private String building_id;
-        private String building_name;
+        @JsonProperty("building_id")
+        private String buildingId;
+
+        @JsonProperty("building_name")
+        private String buildingName;
+
         private List<ComponentDTO> components;
 
         @Getter
@@ -64,18 +108,29 @@ public class SchoolDTO {
         private String id;
         private String name;
         private String type;
-        private String city_alias;
+
+        @JsonProperty("city_alias")
+        private String cityAlias;
+
         private FlagsDTO flags;
-        // Новые поля для поддержания district, settlement, и district_area
-        private String district_id;
-        private String settlement_id;
-        private String district_area_id;
+
+        @JsonProperty("district_id")
+        private String districtId;
+
+        @JsonProperty("settlement_id")
+        private String settlementId;
+
+        @JsonProperty("district_area_id")
+        private String districtAreaId;
 
         @Getter
         @Setter
         public static class FlagsDTO {
-            private boolean is_default;
-            private boolean is_region_center;
+            @JsonProperty("is_default")
+            private boolean isDefault;
+
+            @JsonProperty("is_region_center")
+            private boolean isRegionCenter;
         }
     }
 
@@ -90,7 +145,10 @@ public class SchoolDTO {
         public static class ContactDTO {
             private String text;
             private String code;
-            private String print_text;
+
+            @JsonProperty("print_text")
+            private String printText;
+
             private String type;
             private String value;
             private String url;
@@ -100,7 +158,8 @@ public class SchoolDTO {
     @Getter
     @Setter
     public static class ContextDTO {
-        private List<StopFactorDTO> stop_factors;
+        @JsonProperty("stop_factors")
+        private List<StopFactorDTO> stopFactors;
 
         @Getter
         @Setter
@@ -113,14 +172,18 @@ public class SchoolDTO {
     @Getter
     @Setter
     public static class DatesDTO {
-        private String updated_at;
+        @JsonProperty("updated_at")
+        private String updatedAt;
     }
 
     @Getter
     @Setter
     public static class ExternalContentDTO {
         private int count;
-        private String main_photo_url;
+
+        @JsonProperty("main_photo_url")
+        private String mainPhotoUrl;
+
         private String subtype;
         private String type;
     }
@@ -134,7 +197,8 @@ public class SchoolDTO {
     @Getter
     @Setter
     public static class FloorsDTO {
-        private int ground_count;
+        @JsonProperty("ground_count")
+        private int groundCount;
     }
 
     @Getter
@@ -154,7 +218,9 @@ public class SchoolDTO {
     @Getter
     @Setter
     public static class LinksDTO {
-        private List<DatabaseEntranceDTO> database_entrances;
+        @JsonProperty("database_entrances")
+        private List<DatabaseEntranceDTO> databaseEntrances;
+
         private List<EntranceDTO> entrances;
 
         @Getter
@@ -162,8 +228,12 @@ public class SchoolDTO {
         public static class DatabaseEntranceDTO {
             private GeometryDTO geometry;
             private String id;
-            private boolean is_primary;
-            private boolean is_visible_on_map;
+
+            @JsonProperty("is_primary")
+            private boolean isPrimary;
+
+            @JsonProperty("is_visible_on_map")
+            private boolean isVisibleOnMap;
         }
 
         @Getter
@@ -171,8 +241,12 @@ public class SchoolDTO {
         public static class EntranceDTO {
             private GeometryDTO geometry;
             private String id;
-            private boolean is_primary;
-            private boolean is_visible_on_map;
+
+            @JsonProperty("is_primary")
+            private boolean isPrimary;
+
+            @JsonProperty("is_visible_on_map")
+            private boolean isVisibleOnMap;
         }
     }
 
@@ -181,13 +255,17 @@ public class SchoolDTO {
     public static class NameExDTO {
         private String extension;
         private String primary;
-        private String short_name;
+
+        @JsonProperty("short_name")
+        private String shortName;
     }
 
     @Getter
     @Setter
     public static class OrgDTO {
-        private int branch_count;
+        @JsonProperty("branch_count")
+        private int branchCount;
+
         private String id;
         private String name;
     }
@@ -202,16 +280,25 @@ public class SchoolDTO {
     @Getter
     @Setter
     public static class ReviewsDTO {
-        private double general_rating;
-        private int general_review_count;
-        private int general_review_count_with_stars;
-        private boolean is_reviewable;
+        @JsonProperty("general_rating")
+        private double generalRating;
+
+        @JsonProperty("general_review_count")
+        private int generalReviewCount;
+
+        @JsonProperty("general_review_count_with_stars")
+        private int generalReviewCountWithStars;
+
+        @JsonProperty("is_reviewable")
+        private boolean isReviewable;
+
         private List<ItemDTO> items;
 
         @Getter
         @Setter
         public static class ItemDTO {
-            private boolean is_reviewable;
+            @JsonProperty("is_reviewable")
+            private boolean isReviewable;
             private String tag;
         }
     }
@@ -223,8 +310,12 @@ public class SchoolDTO {
         private String id;
         private String kind;
         private String name;
-        private String parent_id;
-        private int short_id;
+
+        @JsonProperty("parent_id")
+        private String parentId;
+
+        @JsonProperty("short_id")
+        private int shortId;
     }
 
     @Getter
@@ -241,7 +332,8 @@ public class SchoolDTO {
         @Getter
         @Setter
         public static class DayDTO {
-            private List<WorkingHourDTO> working_hours;
+            @JsonProperty("working_hours")
+            private List<WorkingHourDTO> workingHours;
 
             @Getter
             @Setter
@@ -256,8 +348,13 @@ public class SchoolDTO {
     @Setter
     public static class StatDTO {
         private long adst;
-        private boolean is_advertised;
+
+        @JsonProperty("is_advertised")
+        private boolean isAdvertised;
+
         private String rubr;
-        private int source_type;
+
+        @JsonProperty("source_type")
+        private int sourceType;
     }
 }

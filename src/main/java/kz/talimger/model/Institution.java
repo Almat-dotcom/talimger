@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class EducationalInstitution extends BaseEntity {
+public abstract class Institution extends BaseEntity {
 
     private String name;
 
@@ -22,7 +22,7 @@ public abstract class EducationalInstitution extends BaseEntity {
 
     private String shortName;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "address_id")
     private Address address;
 
@@ -35,11 +35,11 @@ public abstract class EducationalInstitution extends BaseEntity {
     private List<Rubric> rubrics;
 
     @ManyToOne
-    @JoinColumn(name = "city_id", nullable = true)
+    @JoinColumn(name = "city_id")
     private City city;
 
     @ManyToOne
-    @JoinColumn(name = "region_id", nullable = true)
+    @JoinColumn(name = "region_id")
     private Region region;
 
     @OneToOne(cascade = CascadeType.ALL)

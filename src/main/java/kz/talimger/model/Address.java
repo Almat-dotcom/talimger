@@ -6,15 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "address")
-public class Address extends BaseEntity{
+public class Address extends BaseEntity {
     @Column(nullable = true, unique = true)
     private String buildingId;
 
@@ -23,33 +21,34 @@ public class Address extends BaseEntity{
     private Country country;
 
     @ManyToOne
-    @JoinColumn(name = "region_id", nullable = true)
-    private Region region; // Область (если применимо)
+    @JoinColumn(name = "region_id")
+    private Region region;
 
     @ManyToOne
-    @JoinColumn(name = "city_id", nullable = true)
-    private City city; // Город или поселок
+    @JoinColumn(name = "city_id")
+    private City city;
 
     @ManyToOne
-    @JoinColumn(name = "district_id", nullable = true)
-    private District district; // Район города (если применимо)
+    @JoinColumn(name = "district_id")
+    private District district;
 
     @ManyToOne
-    @JoinColumn(name = "district_area_id", nullable = true)
-    private DistrictArea districtArea; // Административная единица
+    @JoinColumn(name = "district_area_id")
+    private DistrictArea districtArea;
 
     @ManyToOne
-    @JoinColumn(name = "settlement_id", nullable = true)
-    private Settlement settlement; // Поселок
+    @JoinColumn(name = "settlement_id")
+    private Settlement settlement;
 
-    @Column(name = "street", nullable = true)
-    private String street; // Улица
+    @Column(name = "street")
+    private String street;
 
-    @Column(name = "building_number", nullable = true)
-    private String buildingNumber; // Номер здания
+    @Column(name = "building_number")
+    private String buildingNumber;
 
-    @Column(nullable = true)
+    @Column(name = "address_name")
     private String addressName;
-    
+
+    @Column(name = "address_comment")
     private String addressComment;
 }

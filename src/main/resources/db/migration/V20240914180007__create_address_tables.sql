@@ -19,12 +19,12 @@ CREATE TABLE region (
                         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                         location_id BIGINT NOT NULL UNIQUE,
                         name VARCHAR(255) NOT NULL UNIQUE,
-                        country_id UUID NOT NULL,
+                        country_id UUID,
                         created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
                         updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
                         created_by VARCHAR(255),
                         updated_by VARCHAR(255),
-                        CONSTRAINT fk_country FOREIGN KEY (country_id) REFERENCES country(id) ON DELETE CASCADE
+                        CONSTRAINT fk_country FOREIGN KEY (country_id) REFERENCES country(id)
 );
 
 COMMENT ON TABLE region IS 'Таблица для хранения регионов';
@@ -38,8 +38,8 @@ ALTER TABLE city
     ADD COLUMN location_id BIGINT NOT NULL UNIQUE;
 
 ALTER TABLE city
-    ADD COLUMN region_id UUID NOT NULL,
-    ADD CONSTRAINT fk_region FOREIGN KEY (region_id) REFERENCES region(id) ON DELETE CASCADE;
+    ADD COLUMN region_id UUID,
+    ADD CONSTRAINT fk_region FOREIGN KEY (region_id) REFERENCES region(id);
 
 ALTER TABLE city
     ADD COLUMN is_center BOOLEAN DEFAULT FALSE;
@@ -58,8 +58,8 @@ CREATE TABLE district (
                           updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
                           created_by VARCHAR(255),
                           updated_by VARCHAR(255),
-                          CONSTRAINT fk_city FOREIGN KEY (city_id) REFERENCES city(id) ON DELETE CASCADE,
-                          CONSTRAINT fk_country FOREIGN KEY (country_id) REFERENCES country(id) ON DELETE CASCADE
+                          CONSTRAINT fk_city FOREIGN KEY (city_id) REFERENCES city(id),
+                          CONSTRAINT fk_country FOREIGN KEY (country_id) REFERENCES country(id)
 );
 
 COMMENT ON TABLE district IS 'Таблица для хранения районов города';
@@ -75,7 +75,7 @@ CREATE TABLE district_area (
                                updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
                                created_by VARCHAR(255),
                                updated_by VARCHAR(255),
-                               CONSTRAINT fk_region FOREIGN KEY (region_id) REFERENCES region(id) ON DELETE CASCADE
+                               CONSTRAINT fk_region FOREIGN KEY (region_id) REFERENCES region(id)
 );
 
 CREATE TABLE settlement (
@@ -87,7 +87,7 @@ CREATE TABLE settlement (
                             updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
                             created_by VARCHAR(255),
                             updated_by VARCHAR(255),
-                            CONSTRAINT fk_region FOREIGN KEY (region_id) REFERENCES region(id) ON DELETE CASCADE
+                            CONSTRAINT fk_region FOREIGN KEY (region_id) REFERENCES region(id)
 );
 
 
@@ -121,7 +121,6 @@ CREATE TABLE address (
                          settlement_id UUID,
                          street VARCHAR(255),
                          building_number VARCHAR(255),
-                         postal_code VARCHAR(10),
                          created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
                          updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
                          created_by VARCHAR(255),
@@ -146,6 +145,7 @@ CREATE TABLE rubric (
                         location_id VARCHAR(255) NOT NULL UNIQUE,
                         alias VARCHAR(255) NOT NULL UNIQUE,
                         name VARCHAR(255) NOT NULL,
+                        type VARCHAR(255) NOT NULL,
                         created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
                         updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
                         created_by VARCHAR(255),
@@ -155,10 +155,11 @@ CREATE TABLE rubric (
 COMMENT ON TABLE rubric IS 'Таблица для хранения рубрик';
 COMMENT ON COLUMN rubric.alias IS 'Короткое название рубрики';
 COMMENT ON COLUMN rubric.name IS 'Полное название рубрики';
+COMMENT ON COLUMN rubric.type IS 'Тип рубрики';
 
 
--- Миграция для таблицы educational_institution
-CREATE TABLE educational_institution (
+-- Миграция для таблицы institution
+CREATE TABLE institution (
                                          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                                          name VARCHAR(1000) NOT NULL,
                                          legal_name VARCHAR(1000),
@@ -177,18 +178,18 @@ CREATE TABLE educational_institution (
                                          CONSTRAINT fk_point FOREIGN KEY (point_id) REFERENCES point(id) ON DELETE SET NULL
 );
 
-COMMENT ON TABLE educational_institution IS 'Таблица для хранения образовательных учреждений';
-COMMENT ON COLUMN educational_institution.name IS 'Название образовательного учреждения';
-COMMENT ON COLUMN educational_institution.legal_name IS 'Официальное название образовательного учреждения';
-COMMENT ON COLUMN educational_institution.short_name IS 'Сокращённое название образовательного учреждения';
+COMMENT ON TABLE institution IS 'Таблица для хранения образовательных учреждений';
+COMMENT ON COLUMN institution.name IS 'Название образовательного учреждения';
+COMMENT ON COLUMN institution.legal_name IS 'Официальное название образовательного учреждения';
+COMMENT ON COLUMN institution.short_name IS 'Сокращённое название образовательного учреждения';
 
     -- Migration for the institution_rubric join table
 CREATE TABLE institution_rubric (
                                     institution_id UUID NOT NULL,
                                     rubric_id UUID NOT NULL,
                                     PRIMARY KEY (institution_id, rubric_id),
-                                    CONSTRAINT fk_institution FOREIGN KEY (institution_id) REFERENCES educational_institution(id) ON DELETE CASCADE,
-                                    CONSTRAINT fk_rubric FOREIGN KEY (rubric_id) REFERENCES rubric(id) ON DELETE CASCADE
+                                    CONSTRAINT fk_institution FOREIGN KEY (institution_id) REFERENCES institution(id),
+                                    CONSTRAINT fk_rubric FOREIGN KEY (rubric_id) REFERENCES rubric(id)
 );
 
 COMMENT ON TABLE institution_rubric IS 'Join table for the many-to-many relationship between EducationalInstitution and Rubric';
@@ -197,13 +198,17 @@ COMMENT ON TABLE institution_rubric IS 'Join table for the many-to-many relation
 -- Миграция для таблицы school
 CREATE TABLE school (
                         id UUID PRIMARY KEY,
-                        CONSTRAINT fk_educational_institution FOREIGN KEY (id) REFERENCES educational_institution (id) ON DELETE CASCADE
+                        CONSTRAINT fk_institution FOREIGN KEY (id) REFERENCES institution(id) ON DELETE CASCADE
 );
+
+COMMENT ON TABLE school IS 'Таблица для хранения школ';
 
 -- Миграция для таблицы kindergarten
 CREATE TABLE kindergarten (
                               id UUID PRIMARY KEY,
-                              CONSTRAINT fk_educational_institution FOREIGN KEY (id) REFERENCES educational_institution(id) ON DELETE CASCADE
+                              CONSTRAINT fk_institution FOREIGN KEY (id) REFERENCES institution(id) ON DELETE CASCADE
 );
 
 COMMENT ON TABLE kindergarten IS 'Таблица для хранения детских садов';
+
+DROP TABLE IF EXISTS institute;

@@ -23,5 +23,6 @@ public class City extends BaseEntity {
     @JoinColumn(name = "region_id")
     private Region region;
 
+    @Column(name = "is_center")
     private Boolean isCenter;
 }

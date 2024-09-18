@@ -3,6 +3,7 @@ package kz.talimger.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import kz.talimger.enums.InstitutionEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,12 +15,14 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "rubric")
-public class Rubric extends BaseEntity{
+public class Rubric extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String locationId;
 
     @Column(nullable = false, unique = true)
     private String alias;
+
+    private InstitutionEnum type;
 
     @Column(nullable = false)
     private String name;

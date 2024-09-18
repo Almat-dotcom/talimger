@@ -1,7 +1,8 @@
 package kz.talimger.controller;
 
 import jakarta.transaction.Transactional;
-import kz.talimger.dto.school.SchoolDTO;
+import kz.talimger.dto.institution.InstitutionDTO;
+import kz.talimger.enums.InstitutionEnum;
 import kz.talimger.model.*;
 import kz.talimger.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -50,171 +51,170 @@ public class SchoolController {
      * @return ResponseEntity with the saved school data.
      */
     @PostMapping
-    public ResponseEntity<School> createOrUpdateSchool(@RequestBody List<SchoolDTO> schoolDTOs) {
-        for (SchoolDTO schoolDTO : schoolDTOs) {
+    public ResponseEntity<School> createOrUpdateSchool(@RequestBody List<InstitutionDTO> institutionDTOs) {
+        for (InstitutionDTO institutionDTO : institutionDTOs) {
 
-            // Create new School entity
             School school = new School();
-            school.setName(schoolDTO.getName());
-            school.setLegalName(schoolDTO.getOrg().getName());
-            school.setShortName(schoolDTO.getName_ex().getShort_name());
+            school.setName(institutionDTO.getName());
+            school.setLegalName(institutionDTO.getOrg().getName());
+            school.setShortName(institutionDTO.getNameEx().getShortName());
 
             // Map the Address DTO to the Address entity
             Address address = null;
-            if (schoolDTO.getAddress() != null) {
-                address = addressRepository.findByBuildingId(schoolDTO.getAddress().getBuilding_id())
+            if (institutionDTO.getAddress() != null) {
+                address = addressRepository.findByBuildingId(institutionDTO.getAddress().getBuildingId())
                         .orElseGet(() -> {
                             Address newAddress = new Address();
-                            if (schoolDTO.getAddress().getBuilding_id() == null) {
+                            if (institutionDTO.getAddress().getBuildingId() == null) {
                                 System.out.println("Building ID is null");
                             }
-                            newAddress.setBuildingId(schoolDTO.getAddress().getBuilding_id());
-                            newAddress.setAddressName(schoolDTO.getAddress_name());
+                            newAddress.setBuildingId(institutionDTO.getAddress().getBuildingId());
+                            newAddress.setAddressName(institutionDTO.getAddressName());
                             return newAddress;
                         });
 
-            // Проверка на null перед доступом к объекту point
-            if (schoolDTO.getPoint() != null) {
-                Point point = new Point();
-                point.setLatitude(schoolDTO.getPoint().getLat());
-                point.setLongitude(schoolDTO.getPoint().getLon());
-                point = pointRepository.save(point); // Сохраняем Point
-                school.setPoint(point); // Присваиваем Point в школу
-            } else {
-                // Логика на случай, если Point не указан (например, установите null или другой обработчик)
-                school.setPoint(null);
-            }
+                // Проверка на null перед доступом к объекту point
+                if (institutionDTO.getPoint() != null) {
+                    Point point = new Point();
+                    point.setLatitude(institutionDTO.getPoint().getLat());
+                    point.setLongitude(institutionDTO.getPoint().getLon());
+                    point = pointRepository.save(point); // Сохраняем Point
+                    school.setPoint(point); // Присваиваем Point в школу
+                } else {
+                    // Логика на случай, если Point не указан (например, установите null или другой обработчик)
+                    school.setPoint(null);
+                }
 
 
-            // Set Address in School
+                // Set Address in School
 
-            String countryId = schoolDTO.getAdm_div().stream()
-                    .filter(admDiv -> "country".equals(admDiv.getType()))
-                    .map(SchoolDTO.AdmDivDTO::getId)
-                    .findFirst()
-                    .orElse(null);
+                String countryId = institutionDTO.getAdmDiv().stream()
+                        .filter(admDiv -> "country".equals(admDiv.getType()))
+                        .map(InstitutionDTO.AdmDivDTO::getId)
+                        .findFirst()
+                        .orElse(null);
 
-            Country country = null;
-            if (countryId != null) {
-                country = countryRepository.findByLocationId(Long.valueOf(countryId)).orElseGet(() -> {
-                    Country newCountry = new Country();
-                    newCountry.setName(schoolDTO.getAdm_div().stream()
-                            .filter(admDiv -> "country".equals(admDiv.getType()))
-                            .map(SchoolDTO.AdmDivDTO::getName)
-                            .findFirst()
-                            .orElse(""));
-                    newCountry.setLocationId(Long.valueOf(countryId));
-                    return countryRepository.save(newCountry);
-                });
-            }
+                Country country = null;
+                if (countryId != null) {
+                    country = countryRepository.findByLocationId(Long.valueOf(countryId)).orElseGet(() -> {
+                        Country newCountry = new Country();
+                        newCountry.setName(institutionDTO.getAdmDiv().stream()
+                                .filter(admDiv -> "country".equals(admDiv.getType()))
+                                .map(InstitutionDTO.AdmDivDTO::getName)
+                                .findFirst()
+                                .orElse(""));
+                        newCountry.setLocationId(Long.valueOf(countryId));
+                        return countryRepository.save(newCountry);
+                    });
+                }
 
-            String regionId = schoolDTO.getAdm_div().stream()
-                    .filter(admDiv -> "region".equals(admDiv.getType()))
-                    .map(SchoolDTO.AdmDivDTO::getId)
-                    .findFirst()
-                    .orElse(null);
+                String regionId = institutionDTO.getAdmDiv().stream()
+                        .filter(admDiv -> "region".equals(admDiv.getType()))
+                        .map(InstitutionDTO.AdmDivDTO::getId)
+                        .findFirst()
+                        .orElse(null);
 
-            Region region = null;
-            if (regionId != null && country != null) {
-                Country finalCountry = country;
-                region = regionRepository.findByLocationId(Long.valueOf(regionId)).orElseGet(() -> {
-                    Region newRegion = new Region();
-                    newRegion.setName(schoolDTO.getAdm_div().stream()
-                            .filter(admDiv -> "region".equals(admDiv.getType()))
-                            .map(SchoolDTO.AdmDivDTO::getName)
-                            .findFirst()
-                            .orElse(""));
-                    newRegion.setLocationId(Long.valueOf(regionId));
-                    newRegion.setCountry(finalCountry); // Associate the region with the country
-                    return regionRepository.save(newRegion);
-                });
-            }
+                Region region = null;
+                if (regionId != null && country != null) {
+                    Country finalCountry = country;
+                    region = regionRepository.findByLocationId(Long.valueOf(regionId)).orElseGet(() -> {
+                        Region newRegion = new Region();
+                        newRegion.setName(institutionDTO.getAdmDiv().stream()
+                                .filter(admDiv -> "region".equals(admDiv.getType()))
+                                .map(InstitutionDTO.AdmDivDTO::getName)
+                                .findFirst()
+                                .orElse(""));
+                        newRegion.setLocationId(Long.valueOf(regionId));
+                        newRegion.setCountry(finalCountry); // Associate the region with the country
+                        return regionRepository.save(newRegion);
+                    });
+                }
 
-            // Map and save the City entity
-            String cityId = schoolDTO.getAdm_div().stream()
-                    .filter(admDiv -> "city".equals(admDiv.getType()))
-                    .map(SchoolDTO.AdmDivDTO::getId)
-                    .findFirst()
-                    .orElse(null);
+                // Map and save the City entity
+                String cityId = institutionDTO.getAdmDiv().stream()
+                        .filter(admDiv -> "city".equals(admDiv.getType()))
+                        .map(InstitutionDTO.AdmDivDTO::getId)
+                        .findFirst()
+                        .orElse(null);
 
-            String districtId = schoolDTO.getAdm_div().stream()
-                    .filter(admDiv -> "district".equals(admDiv.getType()))
-                    .map(SchoolDTO.AdmDivDTO::getId)
-                    .findFirst()
-                    .orElse(null);
+                String districtId = institutionDTO.getAdmDiv().stream()
+                        .filter(admDiv -> "district".equals(admDiv.getType()))
+                        .map(InstitutionDTO.AdmDivDTO::getId)
+                        .findFirst()
+                        .orElse(null);
 
-            String settlementId = schoolDTO.getAdm_div().stream()
-                    .filter(admDiv -> "settlement".equals(admDiv.getType()))
-                    .map(SchoolDTO.AdmDivDTO::getId)
-                    .findFirst()
-                    .orElse(null);
+                String settlementId = institutionDTO.getAdmDiv().stream()
+                        .filter(admDiv -> "settlement".equals(admDiv.getType()))
+                        .map(InstitutionDTO.AdmDivDTO::getId)
+                        .findFirst()
+                        .orElse(null);
 
-            String districtAreaId = schoolDTO.getAdm_div().stream()
-                    .filter(admDiv -> "district_area".equals(admDiv.getType()))
-                    .map(SchoolDTO.AdmDivDTO::getId)
-                    .findFirst()
-                    .orElse(null);
+                String districtAreaId = institutionDTO.getAdmDiv().stream()
+                        .filter(admDiv -> "district_area".equals(admDiv.getType()))
+                        .map(InstitutionDTO.AdmDivDTO::getId)
+                        .findFirst()
+                        .orElse(null);
 
-            City city = null;
-            District district=null;
-            Settlement settlement=null;
-            DistrictArea districtArea=null;
-            if (cityId != null) {
-                Region finalRegion = region;
-                city = cityRepository.findByLocationId(Long.valueOf(cityId)).orElseGet(() -> {
-                    City newCity = new City();
-                    newCity.setName(schoolDTO.getAdm_div().stream()
-                            .filter(admDiv -> "city".equals(admDiv.getType()))
-                            .map(SchoolDTO.AdmDivDTO::getName)
-                            .findFirst()
-                            .orElse(""));
-                    newCity.setLocationId(Long.valueOf(cityId));
-                    newCity.setRegion(finalRegion);
-                    return cityRepository.save(newCity);
-                });
-                school.setCity(city);
-            }else if (districtId != null) {
-                Country finalCountry1 = country;
-                City finalCity = city;
-                district = districtRepository.findByLocationId(Long.valueOf(districtId)).orElseGet(() -> {
-                    District newDistrict = new District();
-                    newDistrict.setName(schoolDTO.getAdm_div().stream()
-                            .filter(admDiv -> "district".equals(admDiv.getType()))
-                            .map(SchoolDTO.AdmDivDTO::getName)
-                            .findFirst()
-                            .orElse(""));
-                    newDistrict.setLocationId(Long.valueOf(districtId));
-                    newDistrict.setCountry(finalCountry1);
-                    newDistrict.setCity(finalCity);
-                    return districtRepository.save(newDistrict);
-                });
-            } else if (settlementId != null) {
-                Region finalRegion1 = region;
-                settlement = settlementRepository.findByLocationId(Long.valueOf(settlementId)).orElseGet(() -> {
-                    Settlement newSettlement = new Settlement();
-                    newSettlement.setName(schoolDTO.getAdm_div().stream()
-                            .filter(admDiv -> "settlement".equals(admDiv.getType()))
-                            .map(SchoolDTO.AdmDivDTO::getName)
-                            .findFirst()
-                            .orElse(""));
-                    newSettlement.setLocationId(Long.valueOf(settlementId));
-                    newSettlement.setRegion(finalRegion1);
-                    return settlementRepository.save(newSettlement);
-                });
-            }else if (districtAreaId != null) {
-                Region finalRegion2 = region;
-                districtArea = districtAreaRepository.findByLocationId(Long.valueOf(districtAreaId)).orElseGet(() -> {
-                    DistrictArea newDistrictArea = new DistrictArea();
-                    newDistrictArea.setName(schoolDTO.getAdm_div().stream()
-                            .filter(admDiv -> "district_area".equals(admDiv.getType()))
-                            .map(SchoolDTO.AdmDivDTO::getName)
-                            .findFirst()
-                            .orElse(""));
-                    newDistrictArea.setLocationId(Long.valueOf(districtAreaId));
-                    newDistrictArea.setRegion(finalRegion2);
-                    return districtAreaRepository.save(newDistrictArea);
-                });
-            }
+                City city = null;
+                District district = null;
+                Settlement settlement = null;
+                DistrictArea districtArea = null;
+                if (cityId != null) {
+                    Region finalRegion = region;
+                    city = cityRepository.findByLocationId(Long.valueOf(cityId)).orElseGet(() -> {
+                        City newCity = new City();
+                        newCity.setName(institutionDTO.getAdmDiv().stream()
+                                .filter(admDiv -> "city".equals(admDiv.getType()))
+                                .map(InstitutionDTO.AdmDivDTO::getName)
+                                .findFirst()
+                                .orElse(""));
+                        newCity.setLocationId(Long.valueOf(cityId));
+                        newCity.setRegion(finalRegion);
+                        return cityRepository.save(newCity);
+                    });
+                    school.setCity(city);
+                } else if (districtId != null) {
+                    Country finalCountry1 = country;
+                    City finalCity = city;
+                    district = districtRepository.findByLocationId(Long.valueOf(districtId)).orElseGet(() -> {
+                        District newDistrict = new District();
+                        newDistrict.setName(institutionDTO.getAdmDiv().stream()
+                                .filter(admDiv -> "district".equals(admDiv.getType()))
+                                .map(InstitutionDTO.AdmDivDTO::getName)
+                                .findFirst()
+                                .orElse(""));
+                        newDistrict.setLocationId(Long.valueOf(districtId));
+                        newDistrict.setCountry(finalCountry1);
+                        newDistrict.setCity(finalCity);
+                        return districtRepository.save(newDistrict);
+                    });
+                } else if (settlementId != null) {
+                    Region finalRegion1 = region;
+                    settlement = settlementRepository.findByLocationId(Long.valueOf(settlementId)).orElseGet(() -> {
+                        Settlement newSettlement = new Settlement();
+                        newSettlement.setName(institutionDTO.getAdmDiv().stream()
+                                .filter(admDiv -> "settlement".equals(admDiv.getType()))
+                                .map(InstitutionDTO.AdmDivDTO::getName)
+                                .findFirst()
+                                .orElse(""));
+                        newSettlement.setLocationId(Long.valueOf(settlementId));
+                        newSettlement.setRegion(finalRegion1);
+                        return settlementRepository.save(newSettlement);
+                    });
+                } else if (districtAreaId != null) {
+                    Region finalRegion2 = region;
+                    districtArea = districtAreaRepository.findByLocationId(Long.valueOf(districtAreaId)).orElseGet(() -> {
+                        DistrictArea newDistrictArea = new DistrictArea();
+                        newDistrictArea.setName(institutionDTO.getAdmDiv().stream()
+                                .filter(admDiv -> "district_area".equals(admDiv.getType()))
+                                .map(InstitutionDTO.AdmDivDTO::getName)
+                                .findFirst()
+                                .orElse(""));
+                        newDistrictArea.setLocationId(Long.valueOf(districtAreaId));
+                        newDistrictArea.setRegion(finalRegion2);
+                        return districtAreaRepository.save(newDistrictArea);
+                    });
+                }
                 address.setRegion(region);
                 address.setSettlement(settlement);
                 address.setDistrict(district);
@@ -225,18 +225,19 @@ public class SchoolController {
             school.setAddress(address);
 
             // Map and save Rubrics
-            List<Rubric> rubrics = schoolDTO.getRubrics().stream()
+            List<Rubric> rubrics = institutionDTO.getRubrics().stream()
                     .map(rubricDTO -> rubricRepository.findByLocationId(rubricDTO.getId())
                             .orElseGet(() -> {
                                 Rubric newRubric = new Rubric();
                                 newRubric.setLocationId(rubricDTO.getId());
                                 newRubric.setName(rubricDTO.getName());
                                 newRubric.setAlias(rubricDTO.getAlias());
+                                newRubric.setType(InstitutionEnum.SCHOOL);
                                 return rubricRepository.save(newRubric);
                             }))
                     .toList();
             school.setRubrics(rubrics);
-            if(address!=null) {
+            if (address != null) {
                 addressRepository.save(address);
             }
             schoolRepository.save(school);
