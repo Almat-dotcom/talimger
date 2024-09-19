@@ -15,7 +15,7 @@ public class KindergartenController {
 
     private final KindergartenService kindergartenService;
 
-    @PostMapping
+    @PostMapping("/migration")
     public ResponseEntity<Void> processKindergartens(@RequestBody List<InstitutionDTO> institutionDTOs) {
         kindergartenService.processInstitutions(institutionDTOs);
         return ResponseEntity.ok().build();

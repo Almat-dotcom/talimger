@@ -17,7 +17,7 @@ import java.util.List;
 public class SchoolController {
     private final SchoolService schoolService;
 
-    @PostMapping
+    @PostMapping("/migration")
     public ResponseEntity<Void> processSchools(@RequestBody List<InstitutionDTO> institutionDTOs) {
         schoolService.processInstitutions(institutionDTOs);
         return ResponseEntity.ok().build();
