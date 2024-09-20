@@ -2,20 +2,28 @@ package kz.talimger.service.impl;
 
 import jakarta.transaction.Transactional;
 import kz.talimger.dto.institution.InstitutionDTO;
+import kz.talimger.dto.school.SchoolSearchDto;
+import kz.talimger.dto.school.SchoolViewDto;
 import kz.talimger.enums.InstitutionEnum;
+import kz.talimger.mapper.SchoolMapper;
 import kz.talimger.model.Address;
 import kz.talimger.model.Point;
 import kz.talimger.model.Rubric;
 import kz.talimger.model.School;
 import kz.talimger.repository.SchoolRepository;
 import kz.talimger.service.*;
+import kz.talimger.specification.SchoolSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class SchoolServiceImpl implements SchoolService {
 
@@ -24,8 +32,9 @@ public class SchoolServiceImpl implements SchoolService {
     private final PointService pointService;
     private final AdmDivService admDivService;
     private final RubricService rubricService;
+    private final SchoolMapper schoolMapper;
 
-    @Transactional
+    @Override
     public void processInstitutions(List<InstitutionDTO> institutionDTOs) {
         if (Objects.isNull(institutionDTOs) || institutionDTOs.isEmpty()) {
             throw new IllegalArgumentException("Institution list cannot be null or empty");
@@ -40,6 +49,13 @@ public class SchoolServiceImpl implements SchoolService {
                 }
             }
         }
+    }
+
+    @Override
+    public Page<SchoolViewDto> getPageView(SchoolSearchDto searchDto, Pageable pageable) {
+        Specification<School> schoolSpecification = SchoolSpecification.query(searchDto);
+        return schoolRepository.findAll(schoolSpecification, pageable)
+                .map(schoolMapper::toSchoolViewDto);
     }
 
     private School mapToEntity(InstitutionDTO dto) {

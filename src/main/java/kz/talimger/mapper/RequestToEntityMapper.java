@@ -1,6 +1,7 @@
 package kz.talimger.mapper;
 
 import kz.talimger.model.Department;
+import kz.talimger.model.Rubric;
 import kz.talimger.model.Specialization;
 import kz.talimger.model.Teacher;
 import kz.talimger.repository.DepartmentRepository;
@@ -10,7 +11,10 @@ import lombok.RequiredArgsConstructor;
 import org.mapstruct.Named;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 @Named("RequestToEntityMapper")
@@ -33,5 +37,15 @@ public class RequestToEntityMapper {
     @Named("mapDepartment")
     protected Department mapDepartment(UUID departmentId) {
         return departmentRepository.findById(departmentId).orElse(null);
+    }
+
+    @Named("mapRubricsToString")
+    protected String mapRubricsToString(List<Rubric> rubrics) {
+        if (Objects.isNull(rubrics) || rubrics.isEmpty()) {
+            return null;
+        }
+        return rubrics.stream()
+                .map(Rubric::getName)
+                .collect(Collectors.joining(", "));
     }
 }
