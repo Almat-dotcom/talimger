@@ -2,8 +2,6 @@ package kz.talimger.specification;
 
 import jakarta.persistence.criteria.JoinType;
 import kz.talimger.dto.school.SchoolSearchDto;
-import kz.talimger.model.Institution;
-import kz.talimger.model.Region;
 import kz.talimger.model.School;
 import kz.talimger.util.SpecificationBuilder;
 import lombok.experimental.UtilityClass;

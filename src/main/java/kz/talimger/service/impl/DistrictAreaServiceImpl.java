@@ -1,11 +1,18 @@
 package kz.talimger.service.impl;
 
+import kz.talimger.dto.districtArea.DistrictAreaSearchDto;
+import kz.talimger.dto.districtArea.DistrictAreaViewDto;
 import kz.talimger.dto.institution.InstitutionDTO;
+import kz.talimger.mapper.DistrictAreaMapper;
 import kz.talimger.model.DistrictArea;
 import kz.talimger.model.Region;
 import kz.talimger.repository.DistrictAreaRepository;
 import kz.talimger.service.DistrictAreaService;
+import kz.talimger.specification.DistrictAreaSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -15,7 +22,16 @@ import java.util.Objects;
 public class DistrictAreaServiceImpl implements DistrictAreaService {
 
     private final DistrictAreaRepository districtAreaRepository;
+    private final DistrictAreaMapper districtAreaMapper;
 
+    @Override
+    public Page<DistrictAreaViewDto> getPageView(DistrictAreaSearchDto dto, Pageable pageable) {
+        Specification<DistrictArea> districtAreaSpecification = DistrictAreaSpecification.query(dto);
+        return districtAreaRepository.findAll(districtAreaSpecification, pageable)
+                .map(districtAreaMapper::toDistrictAreaViewDto);
+    }
+
+    @Override
     public DistrictArea findOrCreateMigration(InstitutionDTO.AdmDivDTO admDivDTO, Region region) {
         if (Objects.isNull(admDivDTO) || Objects.isNull(region)) {
             return null;

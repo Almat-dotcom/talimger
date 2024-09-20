@@ -1,11 +1,18 @@
 package kz.talimger.service.impl;
 
+import kz.talimger.dto.city.CitySearchDto;
+import kz.talimger.dto.city.CityViewDto;
 import kz.talimger.dto.institution.InstitutionDTO;
+import kz.talimger.mapper.CityMapper;
 import kz.talimger.model.City;
 import kz.talimger.model.Region;
 import kz.talimger.repository.CityRepository;
 import kz.talimger.service.CityService;
+import kz.talimger.specification.CitySpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -15,7 +22,16 @@ import java.util.Objects;
 public class CityServiceImpl implements CityService {
 
     private final CityRepository cityRepository;
+    private final CityMapper cityMapper;
 
+    @Override
+    public Page<CityViewDto> getPageView(CitySearchDto dto, Pageable pageable) {
+        Specification<City> citySpecification = CitySpecification.query(dto);
+        return cityRepository.findAll(citySpecification, pageable)
+                .map(cityMapper::toCityViewDto);
+    }
+
+    @Override
     public City findOrCreateMigration(InstitutionDTO.AdmDivDTO admDivDTO, Region region) {
         if (Objects.isNull(admDivDTO) || Objects.isNull(region)) {
             return null;

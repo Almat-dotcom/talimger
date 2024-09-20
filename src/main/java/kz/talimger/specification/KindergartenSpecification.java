@@ -2,9 +2,7 @@ package kz.talimger.specification;
 
 import jakarta.persistence.criteria.JoinType;
 import kz.talimger.dto.kindergarten.KindergartenSearchDto;
-import kz.talimger.dto.school.SchoolSearchDto;
 import kz.talimger.model.Kindergarten;
-import kz.talimger.model.School;
 import kz.talimger.util.SpecificationBuilder;
 import lombok.experimental.UtilityClass;
 import org.springframework.data.jpa.domain.Specification;
