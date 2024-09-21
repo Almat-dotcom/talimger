@@ -6,10 +6,12 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring",
-        uses = {RequestToEntityMapper.class})
+        uses = {
+                RequestToEntityMapper.class,
+                AddressMapper.class
+        })
 public interface SchoolMapper {
 
-    @Mapping(source = "address.addressName", target = "address")
     @Mapping(source = "rubrics", target = "rubric", qualifiedByName = "mapRubricsToString")
     SchoolViewDto toSchoolViewDto(School school);
 }

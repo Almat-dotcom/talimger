@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldNameConstants;
 
 @Getter
 @Setter
@@ -12,6 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "city")
+@FieldNameConstants
 public class City extends BaseEntity {
     @Column(nullable = false, unique = true)
     private Long locationId;

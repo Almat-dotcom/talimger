@@ -1,12 +1,14 @@
 package kz.talimger.controller;
 
+import kz.talimger.dto.common.PageDto;
 import kz.talimger.dto.institution.InstitutionDTO;
 import kz.talimger.dto.kindergarten.KindergartenSearchDto;
 import kz.talimger.dto.kindergarten.KindergartenViewDto;
 import kz.talimger.service.KindergartenService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,8 +22,9 @@ public class KindergartenController {
     private final KindergartenService kindergartenService;
 
     @GetMapping
-    public ResponseEntity<Page<KindergartenViewDto>> getKindergartens(@ModelAttribute KindergartenSearchDto searchDto, Pageable pageable) {
-        Page<KindergartenViewDto> kindergartenPage = kindergartenService.getPageView(searchDto, pageable);
+    public ResponseEntity<PageDto<KindergartenViewDto>> getKindergartens(@ModelAttribute KindergartenSearchDto searchDto,
+                                                                         @PageableDefault(sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
+        PageDto<KindergartenViewDto> kindergartenPage = kindergartenService.getPageView(searchDto, pageable);
         return ResponseEntity.ok(kindergartenPage);
     }
 

@@ -18,7 +18,7 @@ public class CitySpecification {
         }
 
         if (Objects.nonNull(searchDto.getName())) {
-            specification = specification.and(nameFilter(searchDto));
+            specification = specification.and(nameFilter(searchDto.getName()));
         }
         return specification;
     }
@@ -27,7 +27,10 @@ public class CitySpecification {
         return (root, cq, cb) -> cb.equal(root.join("region").get("id"), searchDto.getRegionId());
     }
 
-    public Specification<City> nameFilter(CitySearchDto searchDto) {
-        return (root, cq, cb) -> cb.like(cb.lower(root.get("name")), "%" + searchDto.getName().toLowerCase() + "%");
+    public Specification<City> nameFilter(String query) {
+        return (root, cq, cb) -> cb.like(
+                cb.lower(root.get(City.Fields.name)),
+                "%" + query.trim().toLowerCase() + "%"
+        );
     }
 }

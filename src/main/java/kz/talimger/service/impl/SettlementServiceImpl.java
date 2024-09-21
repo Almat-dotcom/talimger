@@ -1,5 +1,6 @@
 package kz.talimger.service.impl;
 
+import kz.talimger.dto.common.PageDto;
 import kz.talimger.dto.institution.InstitutionDTO;
 import kz.talimger.dto.settlement.SettlementSearchDto;
 import kz.talimger.dto.settlement.SettlementViewDto;
@@ -10,7 +11,6 @@ import kz.talimger.repository.SettlementRepository;
 import kz.talimger.service.SettlementService;
 import kz.talimger.specification.SettlementSpecification;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -25,10 +25,11 @@ public class SettlementServiceImpl implements SettlementService {
     private final SettlementMapper settlementMapper;
 
     @Override
-    public Page<SettlementViewDto> getPageView(SettlementSearchDto dto, Pageable pageable) {
+    public PageDto<SettlementViewDto> getPageView(SettlementSearchDto dto, Pageable pageable) {
         Specification<Settlement> settlementSpecification = SettlementSpecification.query(dto);
-        return settlementRepository.findAll(settlementSpecification, pageable)
-                .map(settlementMapper::toSettlementViewDto);
+        return new PageDto<>(
+                settlementRepository.findAll(settlementSpecification, pageable)
+                        .map(settlementMapper::toSettlementViewDto));
     }
 
     @Override

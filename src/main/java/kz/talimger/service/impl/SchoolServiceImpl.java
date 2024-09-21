@@ -1,6 +1,7 @@
 package kz.talimger.service.impl;
 
 import jakarta.transaction.Transactional;
+import kz.talimger.dto.common.PageDto;
 import kz.talimger.dto.institution.InstitutionDTO;
 import kz.talimger.dto.school.SchoolSearchDto;
 import kz.talimger.dto.school.SchoolViewDto;
@@ -14,7 +15,6 @@ import kz.talimger.repository.SchoolRepository;
 import kz.talimger.service.*;
 import kz.talimger.specification.SchoolSpecification;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -52,10 +52,11 @@ public class SchoolServiceImpl implements SchoolService {
     }
 
     @Override
-    public Page<SchoolViewDto> getPageView(SchoolSearchDto searchDto, Pageable pageable) {
+    public PageDto<SchoolViewDto> getPageView(SchoolSearchDto searchDto, Pageable pageable) {
         Specification<School> schoolSpecification = SchoolSpecification.query(searchDto);
-        return schoolRepository.findAll(schoolSpecification, pageable)
-                .map(schoolMapper::toSchoolViewDto);
+        return new PageDto<>(
+                schoolRepository.findAll(schoolSpecification, pageable)
+                        .map(schoolMapper::toSchoolViewDto));
     }
 
     private School mapToEntity(InstitutionDTO dto) {

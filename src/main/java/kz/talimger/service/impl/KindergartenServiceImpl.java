@@ -1,6 +1,7 @@
 package kz.talimger.service.impl;
 
 import jakarta.transaction.Transactional;
+import kz.talimger.dto.common.PageDto;
 import kz.talimger.dto.institution.InstitutionDTO;
 import kz.talimger.dto.kindergarten.KindergartenSearchDto;
 import kz.talimger.dto.kindergarten.KindergartenViewDto;
@@ -14,7 +15,6 @@ import kz.talimger.repository.KindergartenRepository;
 import kz.talimger.service.*;
 import kz.talimger.specification.KindergartenSpecification;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -36,7 +36,7 @@ public class KindergartenServiceImpl implements KindergartenService {
 
     @Override
     public void processInstitutions(List<InstitutionDTO> institutionDTOs) {
-        if (institutionDTOs == null || institutionDTOs.isEmpty()) {
+        if (Objects.isNull(institutionDTOs) || institutionDTOs.isEmpty()) {
             throw new IllegalArgumentException("Institution list cannot be null or empty");
         }
 
@@ -52,10 +52,12 @@ public class KindergartenServiceImpl implements KindergartenService {
     }
 
     @Override
-    public Page<KindergartenViewDto> getPageView(KindergartenSearchDto searchDto, Pageable pageable) {
+    public PageDto<KindergartenViewDto> getPageView(KindergartenSearchDto searchDto, Pageable pageable) {
         Specification<Kindergarten> kindergartenSpecification = KindergartenSpecification.query(searchDto);
-        return kindergartenRepository.findAll(kindergartenSpecification, pageable)
-                .map(kindergartenMapper::toKindergartenViewDto);
+        return new PageDto<>(
+                kindergartenRepository.findAll(kindergartenSpecification, pageable)
+                        .map(kindergartenMapper::toKindergartenViewDto)
+        );
     }
 
     private Kindergarten mapToEntity(InstitutionDTO dto) {

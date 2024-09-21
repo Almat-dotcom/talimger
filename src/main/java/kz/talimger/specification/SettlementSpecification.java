@@ -28,6 +28,6 @@ public class SettlementSpecification {
     }
 
     public Specification<Settlement> nameFilter(SettlementSearchDto searchDto) {
-        return (root, cq, cb) -> cb.like(cb.lower(root.get("name")), "%" + searchDto.getName().toLowerCase() + "%");
+        return (root, cq, cb) -> cb.like(cb.lower(cb.trim(root.get("name"))), "%" + searchDto.getName().toLowerCase().trim() + "%");
     }
 }

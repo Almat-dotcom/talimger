@@ -1,10 +1,10 @@
 package kz.talimger.controller;
 
+import kz.talimger.dto.common.PageDto;
 import kz.talimger.dto.settlement.SettlementSearchDto;
 import kz.talimger.dto.settlement.SettlementViewDto;
 import kz.talimger.service.SettlementService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,8 +19,8 @@ public class SettlementController {
     private final SettlementService settlementService;
 
     @GetMapping
-    public ResponseEntity<Page<SettlementViewDto>> getSettlements(@ModelAttribute SettlementSearchDto searchDto, Pageable pageable) {
-        Page<SettlementViewDto> settlementPage = settlementService.getPageView(searchDto, pageable);
+    public ResponseEntity<PageDto<SettlementViewDto>> getSettlements(@ModelAttribute SettlementSearchDto searchDto, Pageable pageable) {
+        PageDto<SettlementViewDto> settlementPage = settlementService.getPageView(searchDto, pageable);
         return ResponseEntity.ok(settlementPage);
     }
 }

@@ -1,5 +1,6 @@
 package kz.talimger.service.impl;
 
+import kz.talimger.dto.common.PageDto;
 import kz.talimger.dto.districtArea.DistrictAreaSearchDto;
 import kz.talimger.dto.districtArea.DistrictAreaViewDto;
 import kz.talimger.dto.institution.InstitutionDTO;
@@ -10,7 +11,6 @@ import kz.talimger.repository.DistrictAreaRepository;
 import kz.talimger.service.DistrictAreaService;
 import kz.talimger.specification.DistrictAreaSpecification;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -25,10 +25,11 @@ public class DistrictAreaServiceImpl implements DistrictAreaService {
     private final DistrictAreaMapper districtAreaMapper;
 
     @Override
-    public Page<DistrictAreaViewDto> getPageView(DistrictAreaSearchDto dto, Pageable pageable) {
+    public PageDto<DistrictAreaViewDto> getPageView(DistrictAreaSearchDto dto, Pageable pageable) {
         Specification<DistrictArea> districtAreaSpecification = DistrictAreaSpecification.query(dto);
-        return districtAreaRepository.findAll(districtAreaSpecification, pageable)
-                .map(districtAreaMapper::toDistrictAreaViewDto);
+        return new PageDto<>(
+                districtAreaRepository.findAll(districtAreaSpecification, pageable)
+                        .map(districtAreaMapper::toDistrictAreaViewDto));
     }
 
     @Override
