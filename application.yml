@@ -37,4 +37,23 @@ logging:
   level:
     org:
       flywaydb: DEBUG
+
+cors:
+  allowed-origins: "http://localhost:4200"
+
 #  900000
+qr-code:
+  width: 500
+  height: 500
+  font:
+    name: Arial
+    size: 18
+  big-font:
+    size: 24
+  small-font:
+    size: 12
+  text-height: 140
+  base-url: "https://example.com/kindergarten?id="
+pdf:
+  page-size: A4
+  margin: 20

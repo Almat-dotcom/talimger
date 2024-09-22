@@ -6,6 +6,7 @@ import kz.talimger.dto.institution.InstitutionDTO;
 import kz.talimger.dto.school.SchoolSearchDto;
 import kz.talimger.dto.school.SchoolViewDto;
 import kz.talimger.enums.InstitutionEnum;
+import kz.talimger.exception.KazNpuException;
 import kz.talimger.mapper.SchoolMapper;
 import kz.talimger.model.Address;
 import kz.talimger.model.Point;
@@ -14,18 +15,22 @@ import kz.talimger.model.School;
 import kz.talimger.repository.SchoolRepository;
 import kz.talimger.service.*;
 import kz.talimger.specification.SchoolSpecification;
+import kz.talimger.strategy.impl.SchoolQRCodeStrategy;
+import kz.talimger.util.ErrorCodeConstant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class SchoolServiceImpl implements SchoolService {
+public class SchoolServiceImpl implements SchoolService, SchoolQrCodeService {
 
     private final SchoolRepository schoolRepository;
     private final AddressService addressService;
@@ -33,6 +38,7 @@ public class SchoolServiceImpl implements SchoolService {
     private final AdmDivService admDivService;
     private final RubricService rubricService;
     private final SchoolMapper schoolMapper;
+    private final SchoolQRCodeStrategy qrCodeStrategy;
 
     @Override
     public void processInstitutions(List<InstitutionDTO> institutionDTOs) {
@@ -57,6 +63,30 @@ public class SchoolServiceImpl implements SchoolService {
         return new PageDto<>(
                 schoolRepository.findAll(schoolSpecification, pageable)
                         .map(schoolMapper::toSchoolViewDto));
+    }
+
+    @Override
+    public SchoolViewDto generateAndSaveQRCode(UUID schoolId) {
+        return schoolMapper.toSchoolViewDto(qrCodeStrategy.generateAndSaveQRCode(schoolId));
+    }
+
+    @Override
+    public byte[] generatePDFWithQRCode(UUID schoolId) {
+        return qrCodeStrategy.generatePDFWithQRCode(schoolId);
+    }
+
+    @Override
+    public SchoolViewDto deleteQrCode(UUID id) {
+        return schoolMapper.toSchoolViewDto(qrCodeStrategy.deleteQrCode(id));
+    }
+
+    @Override
+    public School find(UUID id) {
+        return schoolRepository.findById(id)
+                .orElseThrow(() -> new KazNpuException(
+                        HttpStatus.FORBIDDEN,
+                        ErrorCodeConstant.SCHOOL_NOT_FOUND,
+                        "message.error.school-not-found"));
     }
 
     private School mapToEntity(InstitutionDTO dto) {

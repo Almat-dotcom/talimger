@@ -46,4 +46,7 @@ public abstract class Institution extends BaseEntity {
     @JoinColumn(name = "point_id", referencedColumnName = "id")
     private Point point;
 
+    @Column(name = "qr_code", columnDefinition = "bytea")
+    private byte[] qrCode;
+
 }
